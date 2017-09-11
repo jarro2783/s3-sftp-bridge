@@ -235,7 +235,7 @@ exports.syncSftpDir = function(sftp, sftpDir, s3Location, fileRetentionDays, top
       function(fileInfo) {
         return Promise.try(function() {
           if (fileInfo.longname[0] == 'd') {
-            return exports.syncSftpDir(sftp, sftpDir + '/' + fileInfo.filename, s3Location, fileRetentionDays, topDir, isInDoneDir || fileInfo.filename == sftpHelper.DoneDir);
+            return exports.syncSftpDir(sftp, sftpDir + '/' + fileInfo.filename, s3Location, fileRetentionDays, topDir, isInDoneDir || fileInfo.filename == conf.DoneDir);
           } else if (isInDoneDir) {
             // Purge files from the .done folder based on the stream config
             var fileDate = new Date(fileInfo.attrs.mtime * 1000),
@@ -245,7 +245,7 @@ exports.syncSftpDir = function(sftp, sftpDir, s3Location, fileRetentionDays, top
               return sftp.unlinkAsync(sftpDir + '/' + fileInfo.filename);
             }
           } else {
-            return sftpHelper.processFile(sftp, sftpDir, fileInfo.filename, function(body) {
+            return sftpHelper.processFile(conf, sftp, sftpDir, fileInfo.filename, function(body) {
               var s3Path = exports.getFilePathArray(s3Location),
                   sftpPath = exports.getFilePathArray(sftpDir),
                   topDirPath = exports.getFilePathArray(topDir);
